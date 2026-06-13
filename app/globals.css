@@ -1,26 +1,162 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f6f2eb;
+  --foreground: #171511;
+  --surface: #fffcf7;
+  --surface-muted: #eee8de;
+  --surface-elevated: #fbf7f0;
+  --line: #ded6ca;
+  --line-strong: #c5b9aa;
+  --muted: #756d63;
+  --muted-strong: #514a42;
+  --accent: #1f2a24;
+  --accent-foreground: #f9f4ec;
+  --danger: #8f2f26;
+  --danger-soft: #f5e4df;
+  --focus: #7b6a55;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-canvas: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-ink: var(--foreground);
+  --color-muted: var(--muted);
+  --color-muted-strong: var(--muted-strong);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-focus: var(--focus);
+  --font-sans: var(--font-geist-sans), "Inter", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: var(--font-geist-mono), "SFMono-Regular", Consolas, monospace;
+  --font-display: Georgia, "Times New Roman", Times, serif;
+  --shadow-editorial: 0 24px 80px rgb(23 21 17 / 0.08);
+  --shadow-subtle: 0 12px 40px rgb(23 21 17 / 0.05);
+  --radius-panel: 8px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * {
+    border-color: var(--line);
+  }
+
+  html {
+    min-height: 100%;
+    background:
+      linear-gradient(180deg, rgb(255 252 247 / 0.72), rgb(246 242 235 / 0) 34rem),
+      var(--background);
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    min-height: 100%;
+    background: transparent;
+    color: var(--foreground);
+    font-family: var(--font-geist-sans), "Inter", "Helvetica Neue", Arial, sans-serif;
+    font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+  }
+
+  ::selection {
+    background: rgb(31 42 36 / 0.16);
+    color: var(--foreground);
+  }
+
+  a,
+  button,
+  input,
+  textarea,
+  select {
+    transition:
+      color 180ms ease,
+      background-color 180ms ease,
+      border-color 180ms ease,
+      box-shadow 180ms ease,
+      opacity 180ms ease,
+      transform 180ms ease;
+  }
+
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 3px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  .admin-shell {
+    @apply min-h-dvh bg-canvas text-ink;
+  }
+
+  .admin-container {
+    @apply mx-auto w-full max-w-7xl px-5 py-8 sm:px-8 lg:px-10;
+  }
+
+  .auth-shell {
+    @apply grid min-h-dvh bg-canvas px-5 py-8 sm:px-8 lg:grid-cols-[minmax(0,0.92fr)_minmax(420px,0.58fr)] lg:px-10;
+  }
+
+  .auth-editorial {
+    @apply hidden border-r border-line pr-10 lg:flex lg:flex-col lg:justify-between;
+  }
+
+  .auth-panel-wrap {
+    @apply flex min-h-[calc(100dvh-4rem)] items-center justify-center lg:justify-end;
+  }
+
+  .editorial-panel {
+    @apply w-full rounded-panel border border-line bg-surface/90 shadow-editorial backdrop-blur;
+  }
+
+  .section-panel {
+    @apply rounded-panel border border-line bg-surface/80 shadow-subtle;
+  }
+
+  .eyebrow {
+    @apply text-xs font-semibold uppercase tracking-[0.28em] text-muted-strong;
+  }
+
+  .display-title {
+    @apply font-display text-4xl leading-[0.95] tracking-normal text-ink sm:text-5xl lg:text-6xl;
+  }
+
+  .page-title {
+    @apply font-display text-3xl leading-tight tracking-normal text-ink sm:text-4xl;
+  }
+
+  .body-copy {
+    @apply text-sm leading-7 text-muted sm:text-base;
+  }
+
+  .field-label {
+    @apply text-xs font-semibold uppercase tracking-[0.18em] text-muted-strong;
+  }
+
+  .field-input {
+    @apply mt-2 h-12 w-full rounded-panel border border-line bg-surface px-4 text-sm text-ink shadow-none outline-none placeholder:text-muted/60 focus:border-line-strong focus:bg-white focus:ring-2 focus:ring-focus/15;
+  }
+
+  .primary-button {
+    @apply inline-flex h-12 items-center justify-center rounded-panel border border-accent bg-accent px-5 text-sm font-semibold text-accent-foreground hover:-translate-y-0.5 hover:bg-ink focus-visible:outline-focus;
+  }
+
+  .quiet-button {
+    @apply inline-flex h-10 items-center justify-center rounded-panel border border-line bg-surface px-4 text-sm font-semibold text-ink hover:border-line-strong hover:bg-surface-elevated;
+  }
+
+  .danger-notice {
+    @apply rounded-panel border border-danger/20 bg-danger-soft px-4 py-3 text-sm leading-6 text-danger;
+  }
 }
