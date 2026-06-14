@@ -71,14 +71,14 @@ export default function ProductsPage() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-6 md:p-10 bg-[#FAF9F6] min-h-screen text-[#1A1A1A]">
+    <div className="max-w-6xl mx-auto min-w-0 p-6 md:p-10 bg-[#FAF9F6] min-h-screen text-[#1A1A1A]">
       <h1 className="text-3xl font-light tracking-widest uppercase border-b border-gray-200 pb-4 mb-8">
         Product Management
       </h1>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+      <div className="grid min-w-0 grid-cols-1 lg:grid-cols-3 gap-10">
         {/* প্রোডাক্ট ফর্ম (মিনিমালিস্ট ডিজাইন) */}
-        <div className="lg:col-span-1 bg-white p-6 border border-gray-100 rounded-sm shadow-sm h-fit">
+        <div className="min-w-0 lg:col-span-1 bg-white p-6 border border-gray-100 rounded-sm shadow-sm h-fit">
           <h2 className="text-lg font-medium tracking-wide uppercase mb-6">
             {editingId ? 'Edit Product' : 'Add New Product'}
           </h2>
@@ -93,7 +93,7 @@ export default function ProductsPage() {
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs uppercase tracking-wider text-gray-500 mb-1">Price ($)</label>
                 <input
@@ -152,9 +152,9 @@ export default function ProductsPage() {
         </div>
 
         {/* প্রোডাক্ট টেবিল/লিস্ট */}
-        <div className="lg:col-span-2 bg-white border border-gray-100 rounded-sm shadow-sm overflow-hidden">
+        <div className="min-w-0 lg:col-span-2 bg-white border border-gray-100 rounded-sm shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+            <table className="w-full min-w-[760px] text-left border-collapse">
               <thead>
                 <tr className="border-b border-gray-100 bg-gray-50 text-xs uppercase tracking-wider text-gray-500">
                   <th className="p-4 font-medium">Product</th>
@@ -176,7 +176,7 @@ export default function ProductsPage() {
                       <td className="p-4 text-gray-500 font-light">{product.category}</td>
                       <td className="p-4 font-medium">${product.price}</td>
                       <td className="p-4 text-gray-600 font-light">{product.stock} pcs</td>
-                      <td className="p-4 text-right space-x-3">
+                      <td className="p-4 text-right space-x-3 whitespace-nowrap">
                         <button
                           onClick={() => handleEdit(product)}
                           className="text-xs uppercase tracking-wider text-blue-600 hover:underline"

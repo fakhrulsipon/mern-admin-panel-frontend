@@ -55,7 +55,7 @@ export default function DashboardLayout({ children }) {
       <aside className="fixed left-0 top-0 h-screen w-64 border-r border-gray-200 bg-white p-8 flex flex-col justify-between hidden lg:flex">
         <div>
           <div className="mb-12">
-            <h2 className="text-xl font-light tracking-[0.2em] uppercase">iLMIFY</h2>
+            <h2 className="text-xl font-light tracking-[0.2em] uppercase">E-Shop</h2>
             <p className="text-[10px] text-gray-400 tracking-widest uppercase mt-1">Admin Console</p>
           </div>
 
@@ -94,8 +94,8 @@ export default function DashboardLayout({ children }) {
       </aside>
 
       {/* Main Content (এখানেই page.js এর ডাটাগুলো রেন্ডার হবে) */}
-      <main className="flex-1 lg:ml-64 p-8 md:p-12">
-        <div className="max-w-6xl mx-auto">
+      <main className="min-w-0 flex-1 p-5 sm:p-8 md:p-12 lg:ml-64">
+        <div className="mx-auto w-full max-w-6xl min-w-0">
           {children}
         </div>
       </main>

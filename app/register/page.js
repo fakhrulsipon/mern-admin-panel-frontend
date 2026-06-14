@@ -46,7 +46,7 @@ export default function Register() {
       </section>
 
       <section className="auth-panel-wrap">
-        <div className="editorial-panel max-w-md p-6 sm:p-8">
+        <div className="editorial-panel max-w-md max-w-full p-6 sm:p-8">
           <div className="space-y-3">
             <p className="eyebrow">Admin Onboarding</p>
             <h2 className="page-title">Create account</h2>

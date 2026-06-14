@@ -35,10 +35,10 @@ export default function DashboardOverview() {
   }
 
   return (
-    <div className="text-[#1A1A1A]">
+    <div className="min-w-0 text-[#1A1A1A]">
       {/* হেডার সেকশন */}
-      <div className="border-b border-gray-200 pb-4 mb-8 flex justify-between items-end">
-        <div>
+      <div className="border-b border-gray-200 pb-4 mb-8 flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-end">
+        <div className="min-w-0">
           <h1 className="text-3xl font-light tracking-widest uppercase">Overview</h1>
           <p className="text-xs text-gray-400 mt-1 uppercase tracking-wider">Performance Metrics</p>
         </div>
@@ -76,7 +76,7 @@ export default function DashboardOverview() {
           <h2 className="text-xs font-medium uppercase tracking-wider text-gray-700">Recent Transactions</h2>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+          <table className="w-full min-w-[680px] text-left border-collapse">
             <thead>
               <tr className="border-b border-gray-100 bg-gray-50 text-xs uppercase tracking-wider text-gray-400">
                 <th className="p-4 font-medium">Customer</th>

@@ -27,7 +27,7 @@ export default function CustomersPage() {
   }
 
   return (
-    <div className="text-[#1A1A1A]">
+    <div className="min-w-0 text-[#1A1A1A]">
       {/* হেডার */}
       <div className="border-b border-gray-200 pb-4 mb-8">
         <h1 className="text-3xl font-light tracking-widest uppercase">Customer Directory</h1>
@@ -35,9 +35,9 @@ export default function CustomersPage() {
       </div>
 
       {/* কাস্টমার টেবিল */}
-      <div className="bg-white border border-gray-100 rounded-sm shadow-sm overflow-hidden">
+      <div className="min-w-0 bg-white border border-gray-100 rounded-sm shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+          <table className="w-full min-w-[720px] text-left border-collapse">
             <thead>
               <tr className="border-b border-gray-100 bg-gray-50 text-xs uppercase tracking-wider text-gray-500">
                 <th className="p-4 font-medium">Customer Info</th>

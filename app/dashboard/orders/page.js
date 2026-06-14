@@ -49,14 +49,14 @@ export default function OrdersPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto p-6 md:p-10 bg-[#FAF9F6] min-h-screen text-[#1A1A1A]">
+    <div className="max-w-7xl mx-auto min-w-0 p-6 md:p-10 bg-[#FAF9F6] min-h-screen text-[#1A1A1A]">
       <h1 className="text-3xl font-light tracking-widest uppercase border-b border-gray-200 pb-4 mb-8">
         Order Management
       </h1>
 
-      <div className="bg-white border border-gray-100 rounded-sm shadow-sm overflow-hidden">
+      <div className="min-w-0 bg-white border border-gray-100 rounded-sm shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+          <table className="w-full min-w-[980px] text-left border-collapse">
             <thead>
               <tr className="border-b border-gray-100 bg-gray-50 text-xs uppercase tracking-wider text-gray-500">
                 <th className="p-4 font-medium">Order ID / Date</th>
@@ -118,7 +118,7 @@ export default function OrdersPage() {
                     </td>
 
                     {/* স্ট্যাটাস চেঞ্জ করার ড্রপডাউন মেনু */}
-                    <td className="p-4 text-right">
+                    <td className="p-4 text-right whitespace-nowrap">
                       <select
                         value={order.status}
                         onChange={(e) => handleStatusChange(order._id, e.target.value)}

@@ -45,7 +45,7 @@ export default function Login() {
       </section>
 
       <section className="auth-panel-wrap">
-        <div className="editorial-panel max-w-md p-6 sm:p-8">
+        <div className="editorial-panel max-w-md max-w-full p-6 sm:p-8">
           <div className="space-y-3">
             <p className="eyebrow">Secure Access</p>
             <h2 className="page-title">Sign in</h2>

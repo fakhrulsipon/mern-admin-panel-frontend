@@ -105,7 +105,7 @@
   }
 
   .auth-shell {
-    @apply grid min-h-dvh bg-canvas px-5 py-8 sm:px-8 lg:grid-cols-[minmax(0,0.92fr)_minmax(420px,0.58fr)] lg:px-10;
+    @apply grid min-h-dvh bg-canvas px-4 py-6 sm:px-8 sm:py-8 lg:grid-cols-[minmax(0,0.92fr)_minmax(420px,0.58fr)] lg:px-10;
   }
 
   .auth-editorial {
@@ -113,7 +113,7 @@
   }
 
   .auth-panel-wrap {
-    @apply flex min-h-[calc(100dvh-4rem)] items-center justify-center lg:justify-end;
+    @apply flex min-h-[calc(100dvh-3rem)] w-full items-center justify-center sm:min-h-[calc(100dvh-4rem)] lg:justify-end;
   }
 
   .editorial-panel {
