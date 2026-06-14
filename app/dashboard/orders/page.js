@@ -57,7 +57,7 @@ export default function OrdersPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto min-w-0 p-6 md:p-10 bg-[#FAF9F6] min-h-screen text-[#1A1A1A]">
+    <div className="max-w-7xl mx-auto min-w-0 bg-[#FAF9F6] min-h-screen text-[#1A1A1A]">
       <h1 className="text-3xl font-light tracking-widest uppercase border-b border-gray-200 pb-4 mb-8">
         Order Management
       </h1>

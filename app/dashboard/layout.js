@@ -1,6 +1,6 @@
 "use client";
-import { useEffect, useSyncExternalStore } from "react";
-import { LogOut, LayoutDashboard, Package, ShoppingCart, Users, Settings } from "lucide-react";
+import { useEffect, useSyncExternalStore, useState } from "react";
+import { LogOut, LayoutDashboard, Package, ShoppingCart, Users, Settings, Menu, X } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { confirmAction, showSuccess } from "@/lib/alerts";
@@ -29,11 +29,17 @@ export default function DashboardLayout({ children }) {
   const router = useRouter();
   const pathname = usePathname();
   const user = useSyncExternalStore(subscribeToAuthSnapshot, getAuthSnapshot, () => null);
+  
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) router.push("/login");
   }, [router]);
+
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [pathname]);
 
   const handleLogout = async () => {
     const confirmed = await confirmAction({
@@ -48,7 +54,7 @@ export default function DashboardLayout({ children }) {
     router.push("/login");
   };
 
-  if (!user) return <div className="h-screen flex items-center justify-center font-light tracking-widest text-gray-400">VERIFYING SESSION...</div>;
+  if (!user) return <div className="h-screen flex items-center justify-center font-light tracking-widest text-gray-400 bg-[#FAF9F6]">VERIFYING SESSION...</div>;
 
   const navItems = [
     { label: "Overview", icon: LayoutDashboard, href: "/dashboard" },
@@ -58,56 +64,93 @@ export default function DashboardLayout({ children }) {
     { label: "Settings", icon: Settings, href: "/dashboard/settings" },
   ];
 
-  return (
-    <div className="flex min-h-screen bg-[#FAF9F6] text-[#1A1A1A]">
-      {/* Sidebar */}
-      <aside className="fixed left-0 top-0 h-screen w-64 border-r border-gray-200 bg-white p-8 flex flex-col justify-between hidden lg:flex">
-        <div>
-          <div className="mb-12">
+  const SidebarContent = () => (
+    <div className="flex flex-col h-full justify-between">
+      <div>
+        <div className="mb-12 flex items-center justify-between">
+          <div>
             <h2 className="text-xl font-light tracking-[0.2em] uppercase">E-Shop</h2>
             <p className="text-[10px] text-gray-400 tracking-widest uppercase mt-1">Admin Console</p>
           </div>
-
-          <nav className="space-y-6">
-            {navItems.map((item) => {
-              const isActive = pathname === item.href;
-              return (
-                <Link
-                  key={item.label}
-                  href={item.href}
-                  className={`flex items-center gap-4 text-xs uppercase tracking-widest transition-all hover:text-black ${
-                    isActive ? "font-bold text-black" : "text-gray-400 font-medium"
-                  }`}
-                >
-                  <item.icon size={16} strokeWidth={isActive ? 2 : 1.5} />
-                  {item.label}
-                </Link>
-              );
-            })}
-          </nav>
-        </div>
-
-        <div>
-          <div className="mb-6 pb-6 border-b border-gray-100">
-            <p className="text-[10px] text-gray-400 uppercase tracking-widest mb-2">Authenticated as</p>
-            <p className="text-xs font-medium truncate">{user.name}</p>
-          </div>
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-4 text-xs uppercase tracking-widest text-rose-500 hover:text-rose-700 transition-all font-medium"
-          >
-            <LogOut size={16} strokeWidth={2} />
-            Logout
+          <button className="lg:hidden p-1 text-gray-500 hover:text-black" onClick={() => setIsMobileMenuOpen(false)}>
+            <X size={20} strokeWidth={1.5} />
           </button>
         </div>
+
+        <nav className="space-y-6">
+          {navItems.map((item) => {
+            const isActive = pathname === item.href;
+            return (
+              <Link
+                key={item.label}
+                href={item.href}
+                className={`flex items-center gap-4 text-xs uppercase tracking-widest transition-all hover:text-black ${
+                  isActive ? "font-bold text-black" : "text-gray-400 font-medium"
+                }`}
+              >
+                <item.icon size={16} strokeWidth={isActive ? 2 : 1.5} />
+                {item.label}
+              </Link>
+            );
+          })}
+        </nav>
+      </div>
+
+      <div>
+        <div className="mb-6 pb-6 border-b border-gray-100">
+          <p className="text-[10px] text-gray-400 uppercase tracking-widest mb-2">Authenticated as</p>
+          <p className="text-xs font-medium truncate">{user.name}</p>
+        </div>
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-4 text-xs uppercase tracking-widest text-rose-500 hover:text-rose-700 transition-all font-medium"
+        >
+          <LogOut size={16} strokeWidth={2} />
+          Logout
+        </button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-[#FAF9F6] text-[#1A1A1A] flex flex-col lg:flex-row">
+      
+      {/* Mobile Header Top Bar */}
+      <header className="lg:hidden w-full bg-white border-b border-gray-200 px-4 py-4 flex items-center justify-between sticky top-0 z-40">
+        <div>
+          <h2 className="text-md font-light tracking-[0.15em] uppercase">E-Shop</h2>
+          <p className="text-[8px] text-gray-400 tracking-wider uppercase">Console</p>
+        </div>
+        <button 
+          onClick={() => setIsMobileMenuOpen(true)}
+          className="p-1.5 border border-gray-200 bg-gray-50 hover:bg-gray-100 transition-colors text-black"
+        >
+          <Menu size={18} strokeWidth={1.5} />
+        </button>
+      </header>
+
+      {/* Mobile Navigation Drawer */}
+      {isMobileMenuOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          <div className="fixed inset-0 bg-black/30 backdrop-blur-sm transition-opacity" onClick={() => setIsMobileMenuOpen(false)} />
+          <aside className="fixed inset-y-0 left-0 w-64 max-w-xs bg-white p-6 shadow-xl border-r border-gray-200 transition-transform duration-300 ease-in-out">
+            <SidebarContent />
+          </aside>
+        </div>
+      )}
+
+      {/* Permanent Desktop Sidebar */}
+      <aside className="fixed left-0 top-0 h-screen w-64 border-r border-gray-200 bg-white p-8 hidden lg:block z-30">
+        <SidebarContent />
       </aside>
 
-      {/* Main Content (এখানেই page.js এর ডাটাগুলো রেন্ডার হবে) */}
-      <main className="min-w-0 flex-1 p-5 sm:p-8 md:p-12 lg:ml-64">
+      {/* Main Content Container with X-Axis Overflow Protection */}
+      <main className="min-w-0 flex-1 w-full overflow-x-hidden p-4 sm:p-6 md:p-8 lg:ml-64 lg:p-12">
         <div className="mx-auto w-full max-w-6xl min-w-0">
           {children}
         </div>
       </main>
+
     </div>
   );
 }
