@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { confirmAction, showError, showSuccess } from '@/lib/alerts';
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState([]);
@@ -7,7 +8,7 @@ export default function OrdersPage() {
   // ১. ডাটাবেজ থেকে সব অর্ডার লোড করা
   const fetchOrders = async () => {
     try {
-      const res = await fetch('http://localhost:8000/api/orders');
+      const res = await fetch('https://mern-admin-panel-ao02.onrender.com/api/orders');
       const data = await res.json();
       setOrders(data);
     } catch (err) {
@@ -21,8 +22,15 @@ export default function OrdersPage() {
 
   // ২. অর্ডারের স্ট্যাটাস পরিবর্তন হ্যান্ডেল করা
   const handleStatusChange = async (orderId, newStatus) => {
+    const confirmed = await confirmAction({
+      title: 'Are you sure you want to update this record?',
+      text: 'This order status will be modified.',
+    });
+
+    if (!confirmed) return;
+
     try {
-      const res = await fetch(`http://localhost:8000/api/orders/${orderId}/status`, {
+      const res = await fetch(`https://mern-admin-panel-ao02.onrender.com/api/orders/${orderId}/status`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus }),

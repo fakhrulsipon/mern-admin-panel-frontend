@@ -8,7 +8,7 @@ export default function CustomersPage() {
   useEffect(() => {
     const fetchCustomers = async () => {
       try {
-        const res = await fetch('http://localhost:8000/api/customers');
+        const res = await fetch('https://mern-admin-panel-ao02.onrender.com/api/customers');
         if (res.ok) {
           const data = await res.json();
           setCustomers(data);

@@ -1,20 +1,19 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { showError } from "@/lib/alerts";
 
 export default function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const router = useRouter();
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    setError("");
 
     try {
-      const res = await fetch("http://localhost:8000/api/auth/register", {
+      const res = await fetch("https://mern-admin-panel-ao02.onrender.com/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password }),
@@ -27,7 +26,7 @@ export default function Register() {
       localStorage.setItem("user", JSON.stringify(data.user));
       router.push("/dashboard");
     } catch (err) {
-      setError(err.message);
+      await showError(err);
     }
   };
 
@@ -52,8 +51,6 @@ export default function Register() {
             <h2 className="page-title">Create account</h2>
             <p className="body-copy">Set up protected access for ecommerce management.</p>
           </div>
-
-          {error && <div className="danger-notice mt-6">{error}</div>}
 
           <form className="mt-8 space-y-6" onSubmit={handleRegister}>
             <div>

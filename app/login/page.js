@@ -1,32 +1,46 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { showError } from "@/lib/alerts";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const router = useRouter();
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError("");
+
+    // --- ফ্রন্টএন্ড স্ট্যান্ডার্ড ভ্যালিডেশন চেক ---
+    if (!email.includes("@")) {
+      await showError("Please enter a valid administrative email address.");
+      return;
+    }
+    if (password.length < 6) {
+      await showError("Authentication failed. Password must be at least 6 characters.");
+      return;
+    }
 
     try {
-      const res = await fetch("http://localhost:8000/api/auth/login", {
+      const res = await fetch("https://mern-admin-panel-ao02.onrender.com/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Unable to sign in");
+      
+      // ব্যাকএন্ড থেকে ভুল পাসওয়ার্ড বা ইমেইল দিলে এই স্ট্যান্ডার্ড মেসেজটি শো করবে
+      if (!res.ok) {
+        throw new Error(data.message || "Invalid email or password. Access denied.");
+      }
 
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
       router.push("/dashboard");
     } catch (err) {
-      setError(err.message);
+      await showError(err);
     }
   };
 
@@ -52,8 +66,7 @@ export default function Login() {
             <p className="body-copy">Enter your admin credentials to continue to the dashboard.</p>
           </div>
 
-          {error && <div className="danger-notice mt-6">{error}</div>}
-
+          {/* স্ট্যান্ডার্ড মিনিমালিস্ট এরর নোটিশ ইউআই */}
           <form className="mt-8 space-y-6" onSubmit={handleLogin}>
             <div>
               <label className="field-label" htmlFor="email">
@@ -82,9 +95,24 @@ export default function Login() {
               />
             </div>
 
-            <button type="submit" className="primary-button w-full">
-              Sign In
-            </button>
+            <div className="space-y-4">
+              <button type="submit" className="primary-button w-full">
+                Sign In
+              </button>
+
+              {/* কাস্টম রেজিস্টার লিংক */}
+              <div className="text-center pt-2">
+                <p className="text-xs text-muted tracking-wide">
+                  New to the console?{" "}
+                  <Link 
+                    href="/register" 
+                    className="text-ink font-semibold underline underline-offset-4 hover:text-black transition-colors"
+                  >
+                    Create an admin account
+                  </Link>
+                </p>
+              </div>
+            </div>
           </form>
         </div>
       </section>

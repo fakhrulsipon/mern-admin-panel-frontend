@@ -1,15 +1,15 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { confirmAction, showError, showSuccess } from '@/lib/alerts';
 
 export default function ProductsPage() {
   const [products, setProducts] = useState([]);
   const [formData, setFormData] = useState({ name: '', price: '', category: '', stock: '', description: '' });
   const [editingId, setEditingId] = useState(null);
 
-  // ১. ডাটাবেজ থেকে সব প্রোডাক্ট লোড করা
   const fetchProducts = async () => {
     try {
-      const res = await fetch('http://localhost:8000/api/products');
+      const res = await fetch('https://mern-admin-panel-ao02.onrender.com/api/products');
       const data = await res.json();
       setProducts(data);
     } catch (err) {
@@ -21,14 +21,14 @@ export default function ProductsPage() {
     fetchProducts();
   }, []);
 
-  // ২. ফর্ম সাবমিট (Create & Update) হ্যান্ডেল করা
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const url = editingId 
-      ? `http://localhost:8000/api/products/${editingId}`
-      : 'http://localhost:8000/api/products';
-    
-    const method = editingId ? 'PUT' : 'POST';
+    const isEditing = Boolean(editingId);
+    const url = isEditing
+      ? `https://mern-admin-panel-ao02.onrender.com/api/products/${editingId}`
+      : 'https://mern-admin-panel-ao02.onrender.com/api/products';
+
+    const method = isEditing ? 'PUT' : 'POST';
 
     try {
       const res = await fetch(url, {
@@ -37,28 +37,43 @@ export default function ProductsPage() {
         body: JSON.stringify(formData),
       });
 
-      if (res.ok) {
-        setFormData({ name: '', price: '', category: '', stock: '', description: '' });
-        setEditingId(null);
-        fetchProducts(); // লিস্ট রিফ্রেশ করা
+      if (!res.ok) {
+        throw new Error('Unable to save product. Please try again.');
       }
+
+      setFormData({ name: '', price: '', category: '', stock: '', description: '' });
+      setEditingId(null);
+      fetchProducts();
+      await showSuccess(isEditing ? 'Product updated successfully.' : 'Product published successfully.');
     } catch (err) {
       console.error('Error saving product:', err);
+      await showError(err);
     }
   };
 
-  // ৩. ডিলিট হ্যান্ডেল করা
   const handleDelete = async (id) => {
-    if (!confirm('Are you sure you want to delete this product?')) return;
+    const confirmed = await confirmAction({
+      title: 'Are you sure you want to delete this record?',
+      text: 'This product will be removed from the catalog.',
+    });
+
+    if (!confirmed) return;
+
     try {
-      const res = await fetch(`http://localhost:8000/api/products/${id}`, { method: 'DELETE' });
-      if (res.ok) fetchProducts();
+      const res = await fetch(`https://mern-admin-panel-ao02.onrender.com/api/products/${id}`, { method: 'DELETE' });
+
+      if (!res.ok) {
+        throw new Error('Unable to delete product. Please try again.');
+      }
+
+      fetchProducts();
+      await showSuccess('Product deleted successfully.');
     } catch (err) {
       console.error('Error deleting product:', err);
+      await showError(err);
     }
   };
 
-  // ৪. এডিট মোড অন করা
   const handleEdit = (product) => {
     setEditingId(product._id);
     setFormData({
@@ -77,7 +92,6 @@ export default function ProductsPage() {
       </h1>
 
       <div className="grid min-w-0 grid-cols-1 lg:grid-cols-3 gap-10">
-        {/* প্রোডাক্ট ফর্ম (মিনিমালিস্ট ডিজাইন) */}
         <div className="min-w-0 lg:col-span-1 bg-white p-6 border border-gray-100 rounded-sm shadow-sm h-fit">
           <h2 className="text-lg font-medium tracking-wide uppercase mb-6">
             {editingId ? 'Edit Product' : 'Add New Product'}
@@ -151,7 +165,6 @@ export default function ProductsPage() {
           </form>
         </div>
 
-        {/* প্রোডাক্ট টেবিল/লিস্ট */}
         <div className="min-w-0 lg:col-span-2 bg-white border border-gray-100 rounded-sm shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full min-w-[760px] text-left border-collapse">

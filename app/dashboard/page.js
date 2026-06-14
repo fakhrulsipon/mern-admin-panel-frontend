@@ -15,7 +15,7 @@ export default function DashboardOverview() {
   useEffect(() => {
     const fetchSummary = async () => {
       try {
-        const res = await fetch("http://localhost:8000/api/analytics/summary");
+        const res = await fetch("https://mern-admin-panel-ao02.onrender.com/api/analytics/summary");
         if (res.ok) {
           const data = await res.json();
           setStats(data);

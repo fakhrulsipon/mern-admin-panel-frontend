@@ -3,6 +3,7 @@ import { useEffect, useSyncExternalStore } from "react";
 import { LogOut, LayoutDashboard, Package, ShoppingCart, Users, Settings } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
+import { confirmAction, showSuccess } from "@/lib/alerts";
 
 // --- Auth logic (Cached) ---
 const subscribeToAuthSnapshot = () => () => {};
@@ -34,8 +35,16 @@ export default function DashboardLayout({ children }) {
     if (!token) router.push("/login");
   }, [router]);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    const confirmed = await confirmAction({
+      title: "Are you sure you want to log out?",
+      text: "Your current admin session will be closed.",
+    });
+
+    if (!confirmed) return;
+
     localStorage.clear();
+    await showSuccess("Logged out successfully.");
     router.push("/login");
   };
 
