@@ -1,122 +1,121 @@
 "use client";
-import { useEffect, useSyncExternalStore } from "react";
-import { LogOut } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 
-const subscribeToAuthSnapshot = () => () => {};
+export default function DashboardOverview() {
+  const [stats, setStats] = useState({
+    totalProducts: 0,
+    totalOrders: 0,
+    pendingOrders: 0,
+    totalRevenue: 0,
+    recentOrders: []
+  });
+  const [loading, setLoading] = useState(true);
 
-let cachedToken = null;
-let cachedStoredUser = null;
-let cachedUser = null;
-
-const getAuthSnapshot = () => {
-  if (typeof window === "undefined") return null;
-
-  const token = localStorage.getItem("token");
-  const storedUser = localStorage.getItem("user");
-
-  if (!token || !storedUser) {
-    cachedToken = token;
-    cachedStoredUser = storedUser;
-    cachedUser = null;
-    return cachedUser;
-  }
-
-  if (token === cachedToken && storedUser === cachedStoredUser) {
-    return cachedUser;
-  }
-
-  try {
-    cachedToken = token;
-    cachedStoredUser = storedUser;
-    cachedUser = JSON.parse(storedUser);
-    return cachedUser;
-  } catch {
-    cachedToken = token;
-    cachedStoredUser = storedUser;
-    cachedUser = null;
-    return cachedUser;
-  }
-};
-
-export default function DashboardLayout() {
-  const router = useRouter();
-  const user = useSyncExternalStore(subscribeToAuthSnapshot, getAuthSnapshot, () => null);
-
+  // ডাটাবেজ থেকে রিয়েল-টাইম অ্যানালিটিক্স সামারি লোড করা
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const fetchSummary = async () => {
+      try {
+        const res = await fetch("http://localhost:8000/api/analytics/summary");
+        if (res.ok) {
+          const data = await res.json();
+          setStats(data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch dashboard stats:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    if (!token) {
-      router.push("/login");
-    }
-  }, [router]);
+    fetchSummary();
+  }, []);
 
-  const handleLogout = () => {
-    localStorage.clear();
-    router.push("/login");
-  };
-
-  if (!user) {
-    return (
-      <main className="admin-shell grid place-items-center px-5">
-        <div className="editorial-panel max-w-sm p-6 text-center">
-          <p className="eyebrow">Preparing Dashboard</p>
-          <p className="mt-4 body-copy">Verifying your secure admin session.</p>
-        </div>
-      </main>
-    );
+  if (loading) {
+    return <div className="p-10 text-center font-light tracking-widest text-gray-500">LOADING OVERVIEW...</div>;
   }
 
   return (
-    <main className="admin-shell">
-      <div className="admin-container">
-        <header className="flex flex-col gap-6 border-b border-line pb-8 sm:flex-row sm:items-end sm:justify-between">
-          <div className="max-w-3xl">
-            <p className="eyebrow">Commerce Operations</p>
-            <h1 className="mt-4 page-title">Welcome back, {user.name}</h1>
-            <p className="mt-4 body-copy">
-              Review store health, protect catalog quality, and keep daily ecommerce decisions focused.
-            </p>
-          </div>
-          <button onClick={handleLogout} className="quiet-button gap-2 self-start sm:self-auto">
-            <LogOut aria-hidden="true" size={16} strokeWidth={1.8} />
-            Logout
-          </button>
-        </header>
-
-        <section className="grid gap-4 py-8 sm:grid-cols-2 xl:grid-cols-4">
-          {[
-            ["Session", "Active", "Authenticated admin access"],
-            ["Catalog", "Ready", "Product management workspace"],
-            ["Orders", "Queued", "Fulfillment review area"],
-            ["Customers", "Available", "Customer activity overview"],
-          ].map(([label, value, detail]) => (
-            <article key={label} className="section-panel p-5">
-              <p className="eyebrow">{label}</p>
-              <p className="mt-6 font-display text-3xl leading-none text-ink">{value}</p>
-              <p className="mt-4 text-sm leading-6 text-muted">{detail}</p>
-            </article>
-          ))}
-        </section>
-
-        <section className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
-          <div className="section-panel p-6 sm:p-8">
-            <p className="eyebrow">Workspace</p>
-            <h2 className="mt-4 font-display text-3xl leading-tight text-ink">Editorial-grade control for retail teams.</h2>
-            <p className="mt-5 body-copy">
-              The interface foundation now favors quiet contrast, measured spacing, precise typography, and refined borders for a premium admin experience.
-            </p>
-          </div>
-          <div className="section-panel divide-y divide-line">
-            {["Products", "Inventory", "Orders", "Customers"].map((item) => (
-              <div key={item} className="flex items-center justify-between px-6 py-5">
-                <span className="text-sm font-semibold text-ink">{item}</span>
-                <span className="text-xs uppercase tracking-[0.18em] text-muted">Enabled</span>
-              </div>
-            ))}
-          </div>
-        </section>
+    <div className="text-[#1A1A1A]">
+      {/* হেডার সেকশন */}
+      <div className="border-b border-gray-200 pb-4 mb-8 flex justify-between items-end">
+        <div>
+          <h1 className="text-3xl font-light tracking-widest uppercase">Overview</h1>
+          <p className="text-xs text-gray-400 mt-1 uppercase tracking-wider">Performance Metrics</p>
+        </div>
+        <span className="text-xs text-gray-500 font-light font-mono">
+          {new Date().toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}
+        </span>
       </div>
-    </main>
+
+      {/* ৪টি অ্যানালিটিক্স কার্ড গ্রিড */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+        <div className="bg-white border border-gray-100 p-6 rounded-sm shadow-sm">
+          <p className="text-[10px] uppercase tracking-widest text-gray-400 font-medium mb-2">Total Revenue</p>
+          <p className="text-3xl font-light tracking-tight">${stats.totalRevenue}</p>
+        </div>
+
+        <div className="bg-white border border-gray-100 p-6 rounded-sm shadow-sm">
+          <p className="text-[10px] uppercase tracking-widest text-gray-400 font-medium mb-2">Total Orders</p>
+          <p className="text-3xl font-light tracking-tight">{stats.totalOrders}</p>
+        </div>
+
+        <div className="bg-white border border-gray-100 p-6 rounded-sm shadow-sm">
+          <p className="text-[10px] uppercase tracking-widest text-gray-400 font-medium mb-2">Pending Orders</p>
+          <p className="text-3xl font-light tracking-tight text-amber-600">{stats.pendingOrders}</p>
+        </div>
+
+        <div className="bg-white border border-gray-100 p-6 rounded-sm shadow-sm">
+          <p className="text-[10px] uppercase tracking-widest text-gray-400 font-medium mb-2">Active Products</p>
+          <p className="text-3xl font-light tracking-tight">{stats.totalProducts}</p>
+        </div>
+      </div>
+
+      {/* রিসেন্ট অর্ডার টেবিল সেকশন */}
+      <div className="bg-white border border-gray-100 rounded-sm shadow-sm overflow-hidden">
+        <div className="p-5 border-b border-gray-50 bg-[#FAF9F6] flex justify-between items-center">
+          <h2 className="text-xs font-medium uppercase tracking-wider text-gray-700">Recent Transactions</h2>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="border-b border-gray-100 bg-gray-50 text-xs uppercase tracking-wider text-gray-400">
+                <th className="p-4 font-medium">Customer</th>
+                <th className="p-4 font-medium">Items</th>
+                <th className="p-4 font-medium">Total</th>
+                <th className="p-4 font-medium text-right">Status</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-50 text-sm">
+              {stats.recentOrders.length === 0 ? (
+                <tr>
+                  <td colSpan="4" className="p-8 text-center text-gray-400 font-light">No recent transactions yet.</td>
+                </tr>
+              ) : (
+                stats.recentOrders.map((order) => (
+                  <tr key={order._id} className="hover:bg-[#FAF9F6] transition-colors">
+                    <td className="p-4">
+                      <div className="font-medium text-gray-900">{order.customerName}</div>
+                      <div className="text-xs text-gray-400 font-light font-mono">#{order._id.substring(18, 24).toUpperCase()}</div>
+                    </td>
+                    <td className="p-4 text-gray-500 font-light">
+                      {order.products.map(p => p.product?.name).join(", ") || "Products"}
+                    </td>
+                    <td className="p-4 font-medium">${order.totalAmount}</td>
+                    <td className="p-4 text-right">
+                      <span className={`inline-block px-2 py-0.5 text-xs uppercase tracking-wider font-medium rounded-sm ${
+                        order.status === "Pending" ? "text-amber-600 bg-amber-50" :
+                        order.status === "Delivered" ? "text-emerald-600 bg-emerald-50" : "text-gray-500 bg-gray-50"
+                      }`}>
+                        {order.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   );
 }
